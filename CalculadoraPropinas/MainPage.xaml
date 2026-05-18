@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CalculadoraPropinas.ViewModels"
+             x:Class="CalculadoraPropinas.MainPage"
+             BackgroundColor="#333333">
+
+    <ContentPage.BindingContext>
+        <vm:CalculadoraViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="25">
+
+            <Border BackgroundColor="#444444" StrokeShape="RoundRectangle 15" Padding="20" Stroke="Transparent">
+                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+                    
+                    <Label Text="TOTAL P/PERSONA" TextColor="#32E0C4" FontAttributes="Bold" HorizontalOptions="Center" Grid.ColumnSpan="2" Margin="0,0,0,15"/>
+                    
+                    <Label Text="{Binding TotalPorPersona, StringFormat='{0:F0}'}" FontSize="40" TextColor="White" VerticalOptions="Center" Grid.Row="1" Grid.RowSpan="2"/>
+                    
+                    <VerticalStackLayout Grid.Column="1" Grid.Row="1" Spacing="2">
+                        <Label Text="SUBTOTAL" TextColor="LightGray" FontSize="12"/>
+                        <Label Text="{Binding SubTotalPorPersona, StringFormat='{0:F0}'}" TextColor="White" FontSize="16"/>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Grid.Row="2" Spacing="2" Margin="0,10,0,0">
+                        <Label Text="PROPINA" TextColor="LightGray" FontSize="12"/>
+                        <Label Text="{Binding PropinaPorPersona, StringFormat='{0:F0}'}" TextColor="White" FontSize="16"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <Grid ColumnDefinitions="Auto, *">
+                <VerticalStackLayout VerticalOptions="Center">
+                    <Label Text="Valor Boleta:" TextColor="LightGray"/>
+                    <Label Text="$" TextColor="White" FontAttributes="Bold"/>
+                </VerticalStackLayout>
+                <Entry Grid.Column="1" Text="{Binding TotalConsumo}" Keyboard="Numeric" TextColor="White" Margin="10,0,0,0"/>
+            </Grid>
+
+            <Grid ColumnDefinitions="Auto, *, *, *" ColumnSpacing="15">
+                <Label Text="Elige&#x0a;Propina" TextColor="LightGray" VerticalOptions="Center"/>
+                <Button Grid.Column="1" Text="10%" Command="{Binding SeleccionarPropinaCommand}" CommandParameter="10" BackgroundColor="#5B3CD4" TextColor="White" CornerRadius="8"/>
+                <Button Grid.Column="2" Text="15%" Command="{Binding SeleccionarPropinaCommand}" CommandParameter="15" BackgroundColor="#5B3CD4" TextColor="White" CornerRadius="8"/>
+                <Button Grid.Column="3" Text="20%" Command="{Binding SeleccionarPropinaCommand}" CommandParameter="20" BackgroundColor="#5B3CD4" TextColor="White" CornerRadius="8"/>
+            </Grid>
+
+            <VerticalStackLayout Spacing="5">
+                <Label Text="{Binding PorcentajePropina, StringFormat='Propina:&#x0a;{0}%'}" TextColor="LightGray"/>
+                <Slider Value="{Binding PorcentajePropina}" Minimum="0" Maximum="50" MinimumTrackColor="#5B3CD4" ThumbColor="#5B3CD4"/>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="Auto, *, Auto, *" ColumnSpacing="0" Margin="0,10,0,0">
+                <Label Text="Dividir el&#x0a;Total" TextColor="LightGray" VerticalOptions="Center" Margin="0,0,15,0"/>
+                
+                <Button Grid.Column="1" Text="-" Command="{Binding DisminuirPersonasCommand}" BackgroundColor="#5B3CD4" TextColor="White" CornerRadius="8,0,0,8"/>
+                <Label Grid.Column="2" Text="{Binding NumeroPersonas}" TextColor="White" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" BackgroundColor="#444444" Padding="25,10"/>
+                <Button Grid.Column="3" Text="+" Command="{Binding AumentarPersonasCommand}" BackgroundColor="#5B3CD4" TextColor="White" CornerRadius="0,8,8,0"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
