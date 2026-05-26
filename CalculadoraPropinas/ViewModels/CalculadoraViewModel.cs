@@ -1,112 +1,73 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
-namespace CalculadoraPropinas.ViewModels
+namespace CalculadoraPropinas.ViewModels;
+
+// 1. Heredamos de ObservableObject y la clase DEBE ser "partial"
+public partial class CalculadoraViewModel : ObservableObject
 {
-    public class CalculadoraViewModel : INotifyPropertyChanged
+    // 2. Usamos [ObservableProperty] en variables privadas (minúsculas). 
+    // El Toolkit automáticamente creará las propiedades públicas (Mayúsculas) por detrás.
+    
+    [ObservableProperty]
+    private decimal _totalConsumo;
+
+    [ObservableProperty]
+    private int _numeroPersonas = 1;
+
+    [ObservableProperty]
+    private int _porcentajePropina = 10;
+
+    [ObservableProperty]
+    private decimal _subTotalPorPersona;
+
+    [ObservableProperty]
+    private decimal _propinaPorPersona;
+
+    [ObservableProperty]
+    private decimal _totalPorPersona;
+
+    public CalculadoraViewModel()
     {
-        // Variables privadas
-        private decimal _totalConsumo;
-        private int _numeroPersonas = 1;
-        private int _porcentajePropina = 10; // Inicia en 10%
+        CalcularValores();
+    }
 
-        private decimal _subTotalPorPersona;
-        private decimal _propinaPorPersona;
-        private decimal _totalPorPersona;
+    // 3. Estos métodos "On...Changed" los detecta el Toolkit automáticamente.
+    // Se ejecutan solos cada vez que cambian las variables de arriba.
+    partial void OnTotalConsumoChanged(decimal value) => CalcularValores();
+    partial void OnNumeroPersonasChanged(int value) => CalcularValores();
+    partial void OnPorcentajePropinaChanged(int value) => CalcularValores();
 
-        // Evento requerido por MVVM para avisar a la pantalla de los cambios
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        // Propiedades públicas (Las que se conectan con el XAML mediante {Binding})
-        public decimal TotalConsumo
+    // 4. Usamos [RelayCommand] para convertir métodos normales en Comandos
+    [RelayCommand]
+    private void SeleccionarPropina(string porcentaje)
+    {
+        if (int.TryParse(porcentaje, out int p))
         {
-            get => _totalConsumo;
-            set { if (_totalConsumo != value) { _totalConsumo = value; OnPropertyChanged(); CalcularValores(); } }
+            PorcentajePropina = p;
         }
+    }
 
-        public int NumeroPersonas
-        {
-            get => _numeroPersonas;
-            set { if (_numeroPersonas != value) { _numeroPersonas = value; OnPropertyChanged(); CalcularValores(); } }
-        }
+    [RelayCommand]
+    private void AumentarPersonas()
+    {
+        NumeroPersonas++;
+    }
 
-        public int PorcentajePropina
-        {
-            get => _porcentajePropina;
-            set { if (_porcentajePropina != value) { _porcentajePropina = value; OnPropertyChanged(); CalcularValores(); } }
-        }
+    [RelayCommand]
+    private void DisminuirPersonas()
+    {
+        if (NumeroPersonas > 1) 
+            NumeroPersonas--;
+    }
 
-        // Resultados calculados
-        public decimal SubTotalPorPersona
-        {
-            get => _subTotalPorPersona;
-            private set { _subTotalPorPersona = value; OnPropertyChanged(); }
-        }
+    // Método privado normal con la lógica de negocio
+    private void CalcularValores()
+    {
+        if (NumeroPersonas <= 0) return;
 
-        public decimal PropinaPorPersona
-        {
-            get => _propinaPorPersona;
-            private set { _propinaPorPersona = value; OnPropertyChanged(); }
-        }
-
-        public decimal TotalPorPersona
-        {
-            get => _totalPorPersona;
-            private set { _totalPorPersona = value; OnPropertyChanged(); }
-        }
-
-        // Comandos (Reemplazan al evento "Clicked" tradicional)
-        public ICommand SeleccionarPropinaCommand { get; }
-        public ICommand AumentarPersonasCommand { get; }
-        public ICommand DisminuirPersonasCommand { get; }
-
-        public CalculadoraViewModel()
-        {
-            // Inicialización de comandos
-            SeleccionarPropinaCommand = new Command<string>(porcentaje =>
-            {
-                if (int.TryParse(porcentaje, out int p))
-                {
-                    PorcentajePropina = p; // Esto actualiza el Slider automáticamente
-                }
-            });
-
-            AumentarPersonasCommand = new Command(() => NumeroPersonas++);
-            DisminuirPersonasCommand = new Command(() => { if (NumeroPersonas > 1) NumeroPersonas--; });
-
-            CalcularValores(); // Cálculo inicial
-        }
-
-        // Lógica de negocio solicitada en la rúbrica
-        private void CalcularValores()
-        {
-            if (NumeroPersonas <= 0) return;
-
-            CalcularSubTotal();
-            CalcularPropina();
-            CalcularTotal();
-        }
-
-        private void CalcularSubTotal()
-        {
-            SubTotalPorPersona = TotalConsumo / NumeroPersonas;
-        }
-
-        private void CalcularPropina()
-        {
-            decimal propinaTotal = TotalConsumo * (PorcentajePropina / 100m);
-            PropinaPorPersona = propinaTotal / NumeroPersonas;
-        }
-
-        private void CalcularTotal()
-        {
-            TotalPorPersona = SubTotalPorPersona + PropinaPorPersona;
-        }
-
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        SubTotalPorPersona = TotalConsumo / NumeroPersonas;
+        PropinaPorPersona = (TotalConsumo * (PorcentajePropina / 100m)) / NumeroPersonas;
+        TotalPorPersona = SubTotalPorPersona + PropinaPorPersona;
     }
 }
