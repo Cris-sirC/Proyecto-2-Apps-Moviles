@@ -7,12 +7,12 @@
     "target.prop.ro.product.model": "sdk_gphone16k_x86_64",
     "target.prop.ro.product.cpu.abi": "x86_64",
     "deploy.error.code": "",
-    "deploy.tool": "xamarin.sync",
+    "deploy.tool": "xamarin.cp",
     "deploy.result": "Success",
     "deploy.supports.fastdev": "True",
     "deploy.systemapp": "False",
-    "deploy.duration.ms": "84005",
-    "pii.deploy.error": "",
-    "pii.deploy.file": ""
+    "deploy.duration.ms": "155440",
+    "pii.deploy.error": "error: Could not read data from stdin. The operation timed out. [5603896117] ",
+    "pii.deploy.file": "obj\\Debug\\net10.0-android\\android\\assets\\x86_64\\Microsoft.VisualBasic.Core.dll"
   }
 }
